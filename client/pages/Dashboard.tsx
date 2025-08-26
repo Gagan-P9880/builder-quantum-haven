@@ -254,7 +254,7 @@ export default function Dashboard() {
                     <div className="text-right">
                       <p className="text-sm text-muted-foreground">
                         <Clock className="h-3 w-3 inline mr-1" />
-                        {event.timestamp.toLocaleTimeString()}
+                        {new Date(event.timestamp).toLocaleTimeString()}
                       </p>
                       <p className={`text-xs font-medium ${getSeverityColor(event.severity)}`}>
                         {event.severity.toUpperCase()}
