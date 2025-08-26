@@ -2,7 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Shield, Eye, EyeOff, Lock, User, AlertCircle } from "lucide-react";
 import Layout from "@/components/Layout";
@@ -13,7 +19,7 @@ export default function Admin() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
-    rememberMe: false
+    rememberMe: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,29 +32,29 @@ export default function Admin() {
       const response = await apiService.login({
         username: formData.username,
         password: formData.password,
-        rememberMe: formData.rememberMe
+        rememberMe: formData.rememberMe,
       });
 
       if (response.success && response.token) {
         // Store auth token
         apiService.setAuthToken(response.token);
-        localStorage.setItem('user_data', JSON.stringify(response.user));
+        localStorage.setItem("user_data", JSON.stringify(response.user));
 
         // Redirect to dashboard
-        window.location.href = '/';
+        window.location.href = "/";
       } else {
-        setError(response.message || 'Login failed');
+        setError(response.message || "Login failed");
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Unable to connect to server. Please try again.');
+      console.error("Login error:", err);
+      setError("Unable to connect to server. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (error) setError(null);
   };
@@ -65,8 +71,12 @@ export default function Admin() {
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">SecureGuard Admin</h1>
-              <p className="text-muted-foreground">Access the security control panel</p>
+              <h1 className="text-2xl font-bold text-foreground">
+                SecureGuard Admin
+              </h1>
+              <p className="text-muted-foreground">
+                Access the security control panel
+              </p>
             </div>
           </div>
 
@@ -95,7 +105,9 @@ export default function Admin() {
                       type="text"
                       placeholder="Enter your username"
                       value={formData.username}
-                      onChange={(e) => handleInputChange("username", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("username", e.target.value)
+                      }
                       className="pl-9"
                       required
                     />
@@ -111,7 +123,9 @@ export default function Admin() {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       value={formData.password}
-                      onChange={(e) => handleInputChange("password", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("password", e.target.value)
+                      }
                       className="pl-9 pr-9"
                       required
                     />
@@ -133,7 +147,9 @@ export default function Admin() {
                   <Checkbox
                     id="remember"
                     checked={formData.rememberMe}
-                    onCheckedChange={(checked) => handleInputChange("rememberMe", checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      handleInputChange("rememberMe", checked as boolean)
+                    }
                   />
                   <Label
                     htmlFor="remember"
@@ -146,7 +162,9 @@ export default function Admin() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={isLoading || !formData.username || !formData.password}
+                  disabled={
+                    isLoading || !formData.username || !formData.password
+                  }
                 >
                   {isLoading ? (
                     <>
@@ -170,10 +188,13 @@ export default function Admin() {
               <div className="flex items-start space-x-3">
                 <Lock className="h-5 w-5 text-warning mt-0.5" />
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-warning">Security Notice</p>
+                  <p className="text-sm font-medium text-warning">
+                    Security Notice
+                  </p>
                   <p className="text-xs text-muted-foreground">
-                    This is a secured administrative area. All access attempts are logged and monitored. 
-                    Unauthorized access is strictly prohibited and may result in legal action.
+                    This is a secured administrative area. All access attempts
+                    are logged and monitored. Unauthorized access is strictly
+                    prohibited and may result in legal action.
                   </p>
                 </div>
               </div>

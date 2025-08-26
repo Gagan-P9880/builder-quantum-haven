@@ -3,7 +3,11 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { getSecurityEvents, addSecurityEvent } from "./routes/security-events";
-import { getSecurityStats, getSystemHealth, updateSecurityStats } from "./routes/security-stats";
+import {
+  getSecurityStats,
+  getSystemHealth,
+  updateSecurityStats,
+} from "./routes/security-stats";
 import { login, verifyToken, logout } from "./routes/auth";
 
 export function createServer() {

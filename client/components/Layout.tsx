@@ -8,7 +8,10 @@ interface LayoutProps {
   showNavigation?: boolean;
 }
 
-export default function Layout({ children, showNavigation = true }: LayoutProps) {
+export default function Layout({
+  children,
+  showNavigation = true,
+}: LayoutProps) {
   const location = useLocation();
 
   const navigationItems = [
@@ -30,8 +33,12 @@ export default function Layout({ children, showNavigation = true }: LayoutProps)
                     <Shield className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h1 className="text-xl font-bold text-foreground">SecureGuard</h1>
-                    <p className="text-xs text-muted-foreground">Security Monitoring Platform</p>
+                    <h1 className="text-xl font-bold text-foreground">
+                      SecureGuard
+                    </h1>
+                    <p className="text-xs text-muted-foreground">
+                      Security Monitoring Platform
+                    </p>
                   </div>
                 </Link>
               </div>
@@ -47,7 +54,7 @@ export default function Layout({ children, showNavigation = true }: LayoutProps)
                         size="sm"
                         className={cn(
                           "flex items-center space-x-2",
-                          isActive && "bg-primary text-primary-foreground"
+                          isActive && "bg-primary text-primary-foreground",
                         )}
                       >
                         <Icon className="h-4 w-4" />
@@ -73,11 +80,13 @@ export default function Layout({ children, showNavigation = true }: LayoutProps)
           </div>
         </header>
       )}
-      
-      <main className={cn(
-        "container mx-auto px-4",
-        showNavigation ? "py-6" : "py-0"
-      )}>
+
+      <main
+        className={cn(
+          "container mx-auto px-4",
+          showNavigation ? "py-6" : "py-0",
+        )}
+      >
         {children}
       </main>
     </div>

@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -12,7 +18,7 @@ import {
   Clock,
   TrendingUp,
   TrendingDown,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { SecurityEvent, SecurityStats, SystemHealth } from "@shared/api";
@@ -26,7 +32,7 @@ export default function Dashboard() {
     unauthorizedScans: 0,
     dosAttacks: 0,
     activeThreats: 0,
-    systemStatus: "operational"
+    systemStatus: "operational",
   });
   const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,11 +42,13 @@ export default function Dashboard() {
   const fetchData = async () => {
     try {
       setError(null);
-      const [eventsResponse, statsResponse, healthResponse] = await Promise.all([
-        apiService.getSecurityEvents(1, 20),
-        apiService.getSecurityStats(),
-        apiService.getSystemHealth()
-      ]);
+      const [eventsResponse, statsResponse, healthResponse] = await Promise.all(
+        [
+          apiService.getSecurityEvents(1, 20),
+          apiService.getSecurityStats(),
+          apiService.getSystemHealth(),
+        ],
+      );
 
       setEvents(eventsResponse.events);
       setStats(statsResponse);
@@ -71,10 +79,14 @@ export default function Dashboard() {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case "critical": return "text-destructive";
-      case "high": return "text-warning";
-      case "medium": return "text-info";
-      default: return "text-success";
+      case "critical":
+        return "text-destructive";
+      case "high":
+        return "text-warning";
+      case "medium":
+        return "text-info";
+      default:
+        return "text-success";
     }
   };
 
@@ -112,7 +124,9 @@ export default function Dashboard() {
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center space-y-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="text-muted-foreground">Loading security dashboard...</p>
+            <p className="text-muted-foreground">
+              Loading security dashboard...
+            </p>
           </div>
         </div>
       </Layout>
@@ -125,7 +139,9 @@ export default function Dashboard() {
         <div className="min-h-[60vh] flex items-center justify-center">
           <Card className="w-full max-w-md text-center">
             <CardHeader>
-              <CardTitle className="text-destructive">Error Loading Dashboard</CardTitle>
+              <CardTitle className="text-destructive">
+                Error Loading Dashboard
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground">{error}</p>
@@ -146,11 +162,17 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Security Dashboard</h1>
-            <p className="text-muted-foreground">Real-time monitoring of RFID access and DoS protection</p>
+            <h1 className="text-3xl font-bold text-foreground">
+              Security Dashboard
+            </h1>
+            <p className="text-muted-foreground">
+              Real-time monitoring of RFID access and DoS protection
+            </p>
           </div>
           <Button onClick={handleRefresh} disabled={isLoading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </div>
@@ -159,11 +181,15 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total RFID Scans</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total RFID Scans
+              </CardTitle>
               <Wifi className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalScans.toLocaleString()}</div>
+              <div className="text-2xl font-bold">
+                {stats.totalScans.toLocaleString()}
+              </div>
               <p className="text-xs text-muted-foreground">
                 <TrendingUp className="h-3 w-3 inline mr-1" />
                 +12% from last hour
@@ -173,24 +199,33 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Authorized Access</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Authorized Access
+              </CardTitle>
               <CheckCircle className="h-4 w-4 text-success" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-success">{stats.authorizedScans.toLocaleString()}</div>
+              <div className="text-2xl font-bold text-success">
+                {stats.authorizedScans.toLocaleString()}
+              </div>
               <p className="text-xs text-muted-foreground">
-                {((stats.authorizedScans / stats.totalScans) * 100).toFixed(1)}% success rate
+                {((stats.authorizedScans / stats.totalScans) * 100).toFixed(1)}%
+                success rate
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Unauthorized Attempts</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Unauthorized Attempts
+              </CardTitle>
               <AlertTriangle className="h-4 w-4 text-destructive" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-destructive">{stats.unauthorizedScans}</div>
+              <div className="text-2xl font-bold text-destructive">
+                {stats.unauthorizedScans}
+              </div>
               <p className="text-xs text-muted-foreground">
                 <TrendingDown className="h-3 w-3 inline mr-1" />
                 -5% from yesterday
@@ -200,7 +235,9 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">DoS Attacks Blocked</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                DoS Attacks Blocked
+              </CardTitle>
               <Shield className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
@@ -227,11 +264,18 @@ export default function Dashboard() {
             <CardContent>
               <div className="space-y-3 max-h-96 overflow-y-auto">
                 {events.map((event) => (
-                  <div key={event.id} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card/50">
+                  <div
+                    key={event.id}
+                    className="flex items-center justify-between p-3 rounded-lg border border-border bg-card/50"
+                  >
                     <div className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-full ${event.type === "rfid" ? "bg-primary/10" : "bg-destructive/10"}`}>
+                      <div
+                        className={`p-2 rounded-full ${event.type === "rfid" ? "bg-primary/10" : "bg-destructive/10"}`}
+                      >
                         {event.type === "rfid" ? (
-                          <Wifi className={`h-4 w-4 ${event.status === "authorized" ? "text-success" : "text-destructive"}`} />
+                          <Wifi
+                            className={`h-4 w-4 ${event.status === "authorized" ? "text-success" : "text-destructive"}`}
+                          />
                         ) : (
                           <Shield className="h-4 w-4 text-destructive" />
                         )}
@@ -239,15 +283,16 @@ export default function Dashboard() {
                       <div>
                         <div className="flex items-center space-x-2">
                           <span className="font-medium">
-                            {event.type === "rfid" ? "RFID Access" : "DoS Attack"}
+                            {event.type === "rfid"
+                              ? "RFID Access"
+                              : "DoS Attack"}
                           </span>
                           {getStatusBadge(event)}
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {event.type === "rfid" 
+                          {event.type === "rfid"
                             ? `${event.location} • Card: ${event.cardId}`
-                            : `Source IP: ${event.ipAddress}`
-                          }
+                            : `Source IP: ${event.ipAddress}`}
                         </p>
                       </div>
                     </div>
@@ -256,7 +301,9 @@ export default function Dashboard() {
                         <Clock className="h-3 w-3 inline mr-1" />
                         {new Date(event.timestamp).toLocaleTimeString()}
                       </p>
-                      <p className={`text-xs font-medium ${getSeverityColor(event.severity)}`}>
+                      <p
+                        className={`text-xs font-medium ${getSeverityColor(event.severity)}`}
+                      >
                         {event.severity.toUpperCase()}
                       </p>
                     </div>
@@ -277,53 +324,91 @@ export default function Dashboard() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">RFID Readers</span>
-                      <span className={`text-sm ${systemHealth.rfidReaders.percentage >= 95 ? 'text-success' : systemHealth.rfidReaders.percentage >= 80 ? 'text-warning' : 'text-destructive'}`}>
+                      <span
+                        className={`text-sm ${systemHealth.rfidReaders.percentage >= 95 ? "text-success" : systemHealth.rfidReaders.percentage >= 80 ? "text-warning" : "text-destructive"}`}
+                      >
                         {systemHealth.rfidReaders.percentage.toFixed(0)}% Online
                       </span>
                     </div>
-                    <Progress value={systemHealth.rfidReaders.percentage} className="h-2" />
+                    <Progress
+                      value={systemHealth.rfidReaders.percentage}
+                      className="h-2"
+                    />
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">DoS Protection</span>
-                      <span className={`text-sm ${systemHealth.dosProtection.status === 'active' ? 'text-success' : 'text-warning'}`}>
-                        {systemHealth.dosProtection.status === 'active' ? 'Active' : systemHealth.dosProtection.status}
+                      <span className="text-sm font-medium">
+                        DoS Protection
+                      </span>
+                      <span
+                        className={`text-sm ${systemHealth.dosProtection.status === "active" ? "text-success" : "text-warning"}`}
+                      >
+                        {systemHealth.dosProtection.status === "active"
+                          ? "Active"
+                          : systemHealth.dosProtection.status}
                       </span>
                     </div>
-                    <Progress value={systemHealth.dosProtection.percentage} className="h-2" />
+                    <Progress
+                      value={systemHealth.dosProtection.percentage}
+                      className="h-2"
+                    />
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">Database</span>
-                      <span className={`text-sm ${systemHealth.database.status === 'operational' ? 'text-success' : systemHealth.database.status === 'degraded' ? 'text-warning' : 'text-destructive'}`}>
-                        {systemHealth.database.status === 'operational' ? 'Operational' : systemHealth.database.status}
+                      <span
+                        className={`text-sm ${systemHealth.database.status === "operational" ? "text-success" : systemHealth.database.status === "degraded" ? "text-warning" : "text-destructive"}`}
+                      >
+                        {systemHealth.database.status === "operational"
+                          ? "Operational"
+                          : systemHealth.database.status}
                       </span>
                     </div>
-                    <Progress value={systemHealth.database.percentage} className="h-2" />
+                    <Progress
+                      value={systemHealth.database.percentage}
+                      className="h-2"
+                    />
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">Network</span>
-                      <span className={`text-sm ${systemHealth.network.percentage >= 90 ? 'text-success' : systemHealth.network.percentage >= 70 ? 'text-warning' : 'text-destructive'}`}>
-                        {systemHealth.network.status === 'normal' ? 'Normal' :
-                         systemHealth.network.status === 'moderate' ? 'Moderate Load' :
-                         systemHealth.network.status === 'high' ? 'High Load' : 'Critical'}
+                      <span
+                        className={`text-sm ${systemHealth.network.percentage >= 90 ? "text-success" : systemHealth.network.percentage >= 70 ? "text-warning" : "text-destructive"}`}
+                      >
+                        {systemHealth.network.status === "normal"
+                          ? "Normal"
+                          : systemHealth.network.status === "moderate"
+                            ? "Moderate Load"
+                            : systemHealth.network.status === "high"
+                              ? "High Load"
+                              : "Critical"}
                       </span>
                     </div>
-                    <Progress value={systemHealth.network.percentage} className="h-2" />
+                    <Progress
+                      value={systemHealth.network.percentage}
+                      className="h-2"
+                    />
                   </div>
 
                   <div className="pt-4 border-t border-border">
                     <div className="flex items-center space-x-2 mb-2">
-                      <div className={`h-2 w-2 rounded-full animate-pulse ${stats.systemStatus === 'operational' ? 'bg-success' : stats.systemStatus === 'warning' ? 'bg-warning' : 'bg-destructive'}`}></div>
-                      <span className="text-sm font-medium">System Status: {stats.systemStatus === 'operational' ? 'Operational' : stats.systemStatus}</span>
+                      <div
+                        className={`h-2 w-2 rounded-full animate-pulse ${stats.systemStatus === "operational" ? "bg-success" : stats.systemStatus === "warning" ? "bg-warning" : "bg-destructive"}`}
+                      ></div>
+                      <span className="text-sm font-medium">
+                        System Status:{" "}
+                        {stats.systemStatus === "operational"
+                          ? "Operational"
+                          : stats.systemStatus}
+                      </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
                       All critical systems are functioning normally.
-                      {stats.activeThreats > 0 && ` ${stats.activeThreats} active threat(s) being monitored.`}
+                      {stats.activeThreats > 0 &&
+                        ` ${stats.activeThreats} active threat(s) being monitored.`}
                     </p>
                   </div>
                 </>

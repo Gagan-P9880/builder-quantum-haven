@@ -8,27 +8,27 @@ let stats = {
   unauthorizedScans: 91,
   dosAttacks: 23,
   activeThreats: 2,
-  systemStatus: "operational" as const
+  systemStatus: "operational" as const,
 };
 
 let systemHealth = {
   rfidReaders: {
     online: 49,
     total: 50,
-    percentage: 98
+    percentage: 98,
   },
   dosProtection: {
     status: "active" as const,
-    percentage: 100
+    percentage: 100,
   },
   database: {
     status: "operational" as const,
-    percentage: 95
+    percentage: 95,
   },
   network: {
     status: "moderate" as const,
-    percentage: 75
-  }
+    percentage: 75,
+  },
 };
 
 // Simulate stats updates
@@ -41,24 +41,30 @@ setInterval(() => {
     } else {
       stats.authorizedScans += 1;
     }
-    
+
     if (Math.random() > 0.9) {
       stats.dosAttacks += 1;
     }
   }
-  
+
   // Simulate system health fluctuations
-  systemHealth.rfidReaders.percentage = Math.max(95, Math.min(100, 
-    systemHealth.rfidReaders.percentage + (Math.random() - 0.5) * 2
-  ));
-  
-  systemHealth.network.percentage = Math.max(60, Math.min(95, 
-    systemHealth.network.percentage + (Math.random() - 0.5) * 5
-  ));
-  
-  systemHealth.database.percentage = Math.max(90, Math.min(100, 
-    systemHealth.database.percentage + (Math.random() - 0.5) * 2
-  ));
+  systemHealth.rfidReaders.percentage = Math.max(
+    95,
+    Math.min(
+      100,
+      systemHealth.rfidReaders.percentage + (Math.random() - 0.5) * 2,
+    ),
+  );
+
+  systemHealth.network.percentage = Math.max(
+    60,
+    Math.min(95, systemHealth.network.percentage + (Math.random() - 0.5) * 5),
+  );
+
+  systemHealth.database.percentage = Math.max(
+    90,
+    Math.min(100, systemHealth.database.percentage + (Math.random() - 0.5) * 2),
+  );
 }, 10000);
 
 export const getSecurityStats: RequestHandler = (req, res) => {
@@ -73,13 +79,13 @@ export const getSystemHealth: RequestHandler = (req, res) => {
 
 export const updateSecurityStats: RequestHandler = (req, res) => {
   const updates = req.body;
-  
+
   // Validate and update stats
-  Object.keys(updates).forEach(key => {
-    if (key in stats && typeof updates[key] === 'number') {
+  Object.keys(updates).forEach((key) => {
+    if (key in stats && typeof updates[key] === "number") {
       (stats as any)[key] = updates[key];
     }
   });
-  
+
   res.json(stats);
 };
