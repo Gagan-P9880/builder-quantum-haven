@@ -149,8 +149,8 @@ export default function Dashboard() {
             <h1 className="text-3xl font-bold text-foreground">Security Dashboard</h1>
             <p className="text-muted-foreground">Real-time monitoring of RFID access and DoS protection</p>
           </div>
-          <Button onClick={() => window.location.reload()}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+          <Button onClick={handleRefresh} disabled={isLoading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
         </div>
