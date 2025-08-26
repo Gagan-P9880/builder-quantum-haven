@@ -272,48 +272,73 @@ export default function Dashboard() {
               <CardDescription>Current security system status</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">RFID Readers</span>
-                  <span className="text-sm text-success">98% Online</span>
-                </div>
-                <Progress value={98} className="h-2" />
-              </div>
-              
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">DoS Protection</span>
-                  <span className="text-sm text-success">Active</span>
-                </div>
-                <Progress value={100} className="h-2" />
-              </div>
-              
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Database</span>
-                  <span className="text-sm text-success">Operational</span>
-                </div>
-                <Progress value={95} className="h-2" />
-              </div>
-              
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Network</span>
-                  <span className="text-sm text-warning">Moderate Load</span>
-                </div>
-                <Progress value={75} className="h-2" />
-              </div>
+              {systemHealth ? (
+                <>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">RFID Readers</span>
+                      <span className={`text-sm ${systemHealth.rfidReaders.percentage >= 95 ? 'text-success' : systemHealth.rfidReaders.percentage >= 80 ? 'text-warning' : 'text-destructive'}`}>
+                        {systemHealth.rfidReaders.percentage.toFixed(0)}% Online
+                      </span>
+                    </div>
+                    <Progress value={systemHealth.rfidReaders.percentage} className="h-2" />
+                  </div>
 
-              <div className="pt-4 border-t border-border">
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="h-2 w-2 bg-success rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium">System Status: Operational</span>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">DoS Protection</span>
+                      <span className={`text-sm ${systemHealth.dosProtection.status === 'active' ? 'text-success' : 'text-warning'}`}>
+                        {systemHealth.dosProtection.status === 'active' ? 'Active' : systemHealth.dosProtection.status}
+                      </span>
+                    </div>
+                    <Progress value={systemHealth.dosProtection.percentage} className="h-2" />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Database</span>
+                      <span className={`text-sm ${systemHealth.database.status === 'operational' ? 'text-success' : systemHealth.database.status === 'degraded' ? 'text-warning' : 'text-destructive'}`}>
+                        {systemHealth.database.status === 'operational' ? 'Operational' : systemHealth.database.status}
+                      </span>
+                    </div>
+                    <Progress value={systemHealth.database.percentage} className="h-2" />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Network</span>
+                      <span className={`text-sm ${systemHealth.network.percentage >= 90 ? 'text-success' : systemHealth.network.percentage >= 70 ? 'text-warning' : 'text-destructive'}`}>
+                        {systemHealth.network.status === 'normal' ? 'Normal' :
+                         systemHealth.network.status === 'moderate' ? 'Moderate Load' :
+                         systemHealth.network.status === 'high' ? 'High Load' : 'Critical'}
+                      </span>
+                    </div>
+                    <Progress value={systemHealth.network.percentage} className="h-2" />
+                  </div>
+
+                  <div className="pt-4 border-t border-border">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className={`h-2 w-2 rounded-full animate-pulse ${stats.systemStatus === 'operational' ? 'bg-success' : stats.systemStatus === 'warning' ? 'bg-warning' : 'bg-destructive'}`}></div>
+                      <span className="text-sm font-medium">System Status: {stats.systemStatus === 'operational' ? 'Operational' : stats.systemStatus}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      All critical systems are functioning normally.
+                      {stats.activeThreats > 0 && ` ${stats.activeThreats} active threat(s) being monitored.`}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  <div className="animate-pulse space-y-2">
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
+                    <div className="h-2 bg-muted rounded"></div>
+                  </div>
+                  <div className="animate-pulse space-y-2">
+                    <div className="h-4 bg-muted rounded w-2/3"></div>
+                    <div className="h-2 bg-muted rounded"></div>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  All critical systems are functioning normally. 
-                  {stats.activeThreats > 0 && ` ${stats.activeThreats} active threat(s) being monitored.`}
-                </p>
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>
