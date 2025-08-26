@@ -10,19 +10,22 @@ A professional, real-time RFID access control and DoS attack detection system bu
 ## 🌟 Features
 
 ### ✅ **Real-Time Security Monitoring**
+
 - **Live RFID access tracking** with authorized/unauthorized detection
-- **DoS attack monitoring** with automatic blocking capabilities  
+- **DoS attack monitoring** with automatic blocking capabilities
 - **Real-time dashboard** updates every 10 seconds
 - **System health monitoring** with performance metrics
 - **Security event feed** with severity levels and timestamps
 
 ### ✅ **Admin Panel**
+
 - **Secure authentication** with role-based access
 - **Professional login interface** with security notices
 - **Session management** with "Remember Me" functionality
 - **Admin controls** for system configuration
 
 ### ✅ **Modern UI/UX**
+
 - **Dark security theme** with professional branding
 - **Responsive design** for all screen sizes
 - **Real-time data visualization** with progress bars and badges
@@ -30,6 +33,7 @@ A professional, real-time RFID access control and DoS attack detection system bu
 - **Professional alerts** and status indicators
 
 ### ✅ **Backend API**
+
 - **RESTful API endpoints** for all security data
 - **Real-time event generation** and storage
 - **Authentication system** with JWT tokens
@@ -39,6 +43,7 @@ A professional, real-time RFID access control and DoS attack detection system bu
 ## 🏗️ Tech Stack
 
 ### **Frontend**
+
 - **React 18** with TypeScript
 - **Vite** for fast development and builds
 - **TailwindCSS 3** for styling
@@ -48,12 +53,14 @@ A professional, real-time RFID access control and DoS attack detection system bu
 - **Lucide React** for icons
 
 ### **Backend**
+
 - **Express.js** with TypeScript
 - **CORS** for cross-origin requests
 - **Zod** for type validation
 - **In-memory storage** (ready for database integration)
 
 ### **Development**
+
 - **PNPM** for package management
 - **Vitest** for testing
 - **ESLint + Prettier** for code quality
@@ -62,18 +69,21 @@ A professional, real-time RFID access control and DoS attack detection system bu
 ## 🚀 Quick Start
 
 ### **Prerequisites**
-- Node.js 18+ 
+
+- Node.js 18+
 - PNPM (recommended) or npm
 
 ### **Installation**
 
 1. **Clone the repository**
+
 ```bash
 git clone <your-repo-url>
 cd secureguard
 ```
 
 2. **Install dependencies**
+
 ```bash
 pnpm install
 # or
@@ -81,18 +91,21 @@ npm install
 ```
 
 3. **Start development server**
+
 ```bash
 pnpm dev
-# or  
+# or
 npm run dev
 ```
 
 4. **Open your browser**
+
 ```
 http://localhost:8080
 ```
 
 ### **Admin Login Credentials**
+
 - **Username:** `admin` | **Password:** `admin123`
 - **Username:** `security` | **Password:** `secure456`
 
@@ -102,7 +115,7 @@ http://localhost:8080
 secureguard/
 ├── client/                 # React frontend
 │   ├── components/         # Reusable UI components
-│   │   ├── ui/            # Radix UI components  
+│   │   ├── ui/            # Radix UI components
 │   │   └── Layout.tsx     # Main layout with navigation
 │   ├── pages/             # Route components
 │   │   ├── Dashboard.tsx  # Main security dashboard
@@ -124,23 +137,27 @@ secureguard/
 ## 🔌 API Endpoints
 
 ### **Security Events**
+
 ```typescript
 GET  /api/security/events     # Get paginated security events
 POST /api/security/events     # Add new security event
 ```
 
 ### **Statistics**
+
 ```typescript
 GET /api/security/stats       # Get current security statistics
 PUT /api/security/stats       # Update security statistics
 ```
 
 ### **System Health**
+
 ```typescript
 GET /api/security/health      # Get system health metrics
 ```
 
 ### **Authentication**
+
 ```typescript
 POST /api/auth/login          # Admin login
 GET  /api/auth/verify         # Verify JWT token
@@ -150,12 +167,14 @@ POST /api/auth/logout         # Logout user
 ## 🎯 Usage
 
 ### **Dashboard Overview**
+
 - **Security Statistics:** Monitor total scans, authorized access, and attack counts
 - **Recent Events:** Live feed of RFID access and DoS attacks
 - **System Health:** Real-time monitoring of RFID readers, DoS protection, database, and network status
 - **Auto-refresh:** Data updates every 10 seconds automatically
 
 ### **Admin Functions**
+
 - **Secure Login:** Access admin controls with authentication
 - **System Monitoring:** View all security events and statistics
 - **Manual Refresh:** Force data updates when needed
@@ -183,16 +202,19 @@ pnpm format.fix       # Format code with Prettier
 ## 🌐 Deployment
 
 ### **Option 1: Netlify (Recommended)**
+
 1. [Connect to Netlify MCP](#open-mcp-popover) in Builder.io
 2. Deploy directly from your workspace
 3. Automatic builds on code changes
 
 ### **Option 2: Vercel**
-1. [Connect to Vercel MCP](#open-mcp-popover) in Builder.io  
+
+1. [Connect to Vercel MCP](#open-mcp-popover) in Builder.io
 2. Seamless full-stack deployment
 3. Edge functions for API routes
 
 ### **Option 3: Traditional Hosting**
+
 ```bash
 # Build the application
 pnpm build
@@ -205,18 +227,21 @@ pnpm build
 ## 🔒 Security Features
 
 ### **Authentication**
+
 - JWT token-based authentication
 - Secure password handling (ready for bcrypt)
 - Session management with expiration
 - Role-based access control foundation
 
 ### **Data Protection**
+
 - CORS protection for API endpoints
 - Input validation with TypeScript
 - Secure headers and best practices
 - Environment variable support for secrets
 
 ### **Monitoring**
+
 - Real-time threat detection simulation
 - Security event logging and tracking
 - System health monitoring
@@ -227,24 +252,27 @@ pnpm build
 Currently uses in-memory storage for demo purposes. Ready for database integration:
 
 ### **Recommended Options**
+
 - **[Neon PostgreSQL](#open-mcp-popover)** - Serverless Postgres
 - **[Supabase](#open-mcp-popover)** - PostgreSQL + Auth + Real-time
 - **MongoDB** - Document database
 - **SQLite** - Local development
 
 ### **Integration Example**
+
 ```typescript
 // Replace in-memory arrays with database queries
 const events = await db.securityEvents.findMany({
-  orderBy: { timestamp: 'desc' },
+  orderBy: { timestamp: "desc" },
   take: limit,
-  skip: (page - 1) * limit
+  skip: (page - 1) * limit,
 });
 ```
 
 ## 🚀 Next Steps & Roadmap
 
 ### **🔥 Priority Features**
+
 - [ ] **Database Integration** - Replace in-memory storage
 - [ ] **RFID Monitor Page** - Detailed access control management
 - [ ] **DoS Protection Page** - Advanced attack analysis and blocking
@@ -252,6 +280,7 @@ const events = await db.securityEvents.findMany({
 - [ ] **Real Hardware Integration** - Connect to actual RFID systems
 
 ### **🌟 Advanced Features**
+
 - [ ] **Email/SMS Alerts** - Real-time notifications for security events
 - [ ] **Report Generation** - PDF/CSV exports of security data
 - [ ] **Multi-location Support** - Monitor multiple facilities
@@ -259,6 +288,7 @@ const events = await db.securityEvents.findMany({
 - [ ] **Audit Logging** - Compliance and forensic capabilities
 
 ### **🔧 Technical Improvements**
+
 - [ ] **Error Monitoring** with [Sentry MCP](#open-mcp-popover)
 - [ ] **Performance Monitoring** and optimization
 - [ ] **API Rate Limiting** for production security
@@ -266,6 +296,7 @@ const events = await db.securityEvents.findMany({
 - [ ] **CI/CD Pipeline** with automated testing
 
 ### **🎨 UI/UX Enhancements**
+
 - [ ] **Dark/Light Mode Toggle** - User preference support
 - [ ] **Dashboard Customization** - Configurable widgets
 - [ ] **Mobile App** - React Native companion
@@ -302,6 +333,7 @@ ALERT_EMAIL=admin@yourcompany.com
 5. **Open a Pull Request**
 
 ### **Development Guidelines**
+
 - Use TypeScript for all new code
 - Follow existing code style and patterns
 - Add tests for new functionality
@@ -311,12 +343,14 @@ ALERT_EMAIL=admin@yourcompany.com
 ## 📞 Support & Resources
 
 ### **Getting Help**
+
 - **Builder.io Documentation:** https://www.builder.io/c/docs/projects
 - **Create Issues:** Report bugs or request features
 - **[Get Support](#reach-support)** for technical assistance
 - **[Contact Sales](#reach-sales)** for enterprise inquiries
 
 ### **Useful Links**
+
 - **[Open Preview](#open-preview)** - View the live application
 - **[Project Settings](#open-settings)** - Configure your workspace
 - **[MCP Integrations](#open-mcp-popover)** - Connect external services
@@ -333,4 +367,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ using [Builder.io](https://builder.io)**
 
-*For questions, support, or feature requests, please [reach out to our team](#reach-support).*
+_For questions, support, or feature requests, please [reach out to our team](#reach-support)._
