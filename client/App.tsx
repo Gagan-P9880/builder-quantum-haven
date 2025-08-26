@@ -5,9 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
+import RfidMonitor from "./pages/RfidMonitor";
+import DosProtection from "./pages/DosProtection";
 import Placeholder from "./pages/Placeholder";
 import NotFound from "./pages/NotFound";
-import { Shield, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 
 // Create QueryClient with better defaults for development
 const queryClient = new QueryClient({
@@ -37,26 +39,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/admin" element={<Admin />} />
-          <Route
-            path="/rfid"
-            element={
-              <Placeholder
-                title="RFID Monitor"
-                description="Detailed RFID access monitoring and card management system"
-                icon={<Shield className="h-8 w-8 text-primary" />}
-              />
-            }
-          />
-          <Route
-            path="/dos"
-            element={
-              <Placeholder
-                title="DoS Protection"
-                description="Advanced Denial of Service attack detection and mitigation controls"
-                icon={<Shield className="h-8 w-8 text-destructive" />}
-              />
-            }
-          />
+          <Route path="/rfid" element={<RfidMonitor />} />
+          <Route path="/dos" element={<DosProtection />} />
           <Route
             path="/settings"
             element={
