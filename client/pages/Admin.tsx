@@ -4,8 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Shield, Eye, EyeOff, Lock, User } from "lucide-react";
+import { Shield, Eye, EyeOff, Lock, User, AlertCircle } from "lucide-react";
 import Layout from "@/components/Layout";
+import apiService from "@/services/api";
 
 export default function Admin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +16,7 @@ export default function Admin() {
     rememberMe: false
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
