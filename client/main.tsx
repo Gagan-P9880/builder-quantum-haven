@@ -22,7 +22,7 @@ if (existingRoot) {
 
 // Handle hot module replacement
 if (import.meta.hot) {
-  import.meta.hot.accept(['./App.tsx'], () => {
+  import.meta.hot.accept(["./App.tsx"], () => {
     // Re-render the app when modules are updated
     const root = (container as any)._reactRoot;
     if (root) {
