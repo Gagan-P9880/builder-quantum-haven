@@ -19,13 +19,30 @@ export default function Admin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate login process
-    setTimeout(() => {
+
+    try {
+      const response = await apiService.login({
+        username: formData.username,
+        password: formData.password,
+        rememberMe: formData.rememberMe
+      });
+
+      if (response.success && response.token) {
+        // Store auth token
+        apiService.setAuthToken(response.token);
+        localStorage.setItem('user_data', JSON.stringify(response.user));
+
+        // Redirect to dashboard
+        window.location.href = '/';
+      } else {
+        setError(response.message || 'Login failed');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Unable to connect to server. Please try again.');
+    } finally {
       setIsLoading(false);
-      // Handle successful login here
-      console.log("Login attempt:", formData);
-    }, 2000);
+    }
   };
 
   const handleInputChange = (field: string, value: string | boolean) => {
