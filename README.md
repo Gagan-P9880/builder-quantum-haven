@@ -118,7 +118,7 @@ secureguard/
 │   │   ├── ui/            # Radix UI components
 │   │   └── Layout.tsx     # Main layout with navigation
 │   ├── pages/             # Route components
-│   │   ├── Dashboard.tsx  # Main security dashboard
+���   │   ├── Dashboard.tsx  # Main security dashboard
 │   │   ├── Admin.tsx      # Admin login page
 │   │   └── Placeholder.tsx # Placeholder for future pages
 │   ├── services/          # API service layer
@@ -268,6 +268,17 @@ const events = await db.securityEvents.findMany({
   skip: (page - 1) * limit,
 });
 ```
+
+### **📘 Complete Integration Guide**
+
+For detailed production integration steps, see: **[SECURITY_INTEGRATION_GUIDE.md](SECURITY_INTEGRATION_GUIDE.md)**
+
+This comprehensive guide covers:
+- **Database persistence** setup (PostgreSQL/MySQL)
+- **Real RFID reader APIs** integration
+- **Network intrusion detection** systems (Snort/Suricata)
+- **External security devices** (Firewall, SIEM, Video Surveillance)
+- **Production deployment** and security hardening
 
 ## 🚀 Next Steps & Roadmap
 
