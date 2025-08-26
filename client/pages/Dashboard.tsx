@@ -3,90 +3,71 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Shield, 
-  Activity, 
-  AlertTriangle, 
-  CheckCircle, 
-  Wifi, 
+import {
+  Shield,
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  Wifi,
   Clock,
   TrendingUp,
   TrendingDown,
   RefreshCw
 } from "lucide-react";
 import Layout from "@/components/Layout";
-
-interface SecurityEvent {
-  id: string;
-  type: "rfid" | "dos";
-  status: "authorized" | "unauthorized" | "blocked" | "detected";
-  timestamp: Date;
-  location?: string;
-  cardId?: string;
-  ipAddress?: string;
-  severity: "low" | "medium" | "high" | "critical";
-}
+import { SecurityEvent, SecurityStats, SystemHealth } from "@shared/api";
+import apiService from "@/services/api";
 
 export default function Dashboard() {
   const [events, setEvents] = useState<SecurityEvent[]>([]);
-  const [stats, setStats] = useState({
-    totalScans: 1247,
-    authorizedScans: 1156,
-    unauthorizedScans: 91,
-    dosAttacks: 23,
-    activeThreats: 2,
-    systemStatus: "operational" as "operational" | "warning" | "critical"
+  const [stats, setStats] = useState<SecurityStats>({
+    totalScans: 0,
+    authorizedScans: 0,
+    unauthorizedScans: 0,
+    dosAttacks: 0,
+    activeThreats: 0,
+    systemStatus: "operational"
   });
+  const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Simulate real-time events
+  // Fetch all data
+  const fetchData = async () => {
+    try {
+      setError(null);
+      const [eventsResponse, statsResponse, healthResponse] = await Promise.all([
+        apiService.getSecurityEvents(1, 20),
+        apiService.getSecurityStats(),
+        apiService.getSystemHealth()
+      ]);
+
+      setEvents(eventsResponse.events);
+      setStats(statsResponse);
+      setSystemHealth(healthResponse);
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+      setError("Failed to load dashboard data. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initial data load
   useEffect(() => {
-    const generateMockEvent = (): SecurityEvent => {
-      const types = ["rfid", "dos"] as const;
-      const type = types[Math.random() > 0.7 ? 1 : 0];
-      
-      if (type === "rfid") {
-        return {
-          id: Math.random().toString(36).substr(2, 9),
-          type,
-          status: Math.random() > 0.2 ? "authorized" : "unauthorized",
-          timestamp: new Date(),
-          location: `Floor ${Math.floor(Math.random() * 5) + 1} - Room ${Math.floor(Math.random() * 20) + 100}`,
-          cardId: `CARD-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
-          severity: Math.random() > 0.8 ? "high" : Math.random() > 0.6 ? "medium" : "low"
-        };
-      } else {
-        return {
-          id: Math.random().toString(36).substr(2, 9),
-          type,
-          status: Math.random() > 0.3 ? "blocked" : "detected",
-          timestamp: new Date(),
-          ipAddress: `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
-          severity: Math.random() > 0.5 ? "critical" : "high"
-        };
-      }
-    };
+    fetchData();
+  }, []);
 
-    // Add initial events
-    const initialEvents = Array.from({ length: 10 }, generateMockEvent);
-    setEvents(initialEvents);
-
-    // Simulate real-time updates
-    const interval = setInterval(() => {
-      const newEvent = generateMockEvent();
-      setEvents(prev => [newEvent, ...prev.slice(0, 19)]); // Keep last 20 events
-      
-      // Update stats
-      setStats(prev => ({
-        ...prev,
-        totalScans: prev.totalScans + (newEvent.type === "rfid" ? 1 : 0),
-        authorizedScans: prev.authorizedScans + (newEvent.type === "rfid" && newEvent.status === "authorized" ? 1 : 0),
-        unauthorizedScans: prev.unauthorizedScans + (newEvent.type === "rfid" && newEvent.status === "unauthorized" ? 1 : 0),
-        dosAttacks: prev.dosAttacks + (newEvent.type === "dos" ? 1 : 0)
-      }));
-    }, 3000);
-
+  // Auto-refresh data every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleRefresh = () => {
+    setIsLoading(true);
+    fetchData();
+  };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
