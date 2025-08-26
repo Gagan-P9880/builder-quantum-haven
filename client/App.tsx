@@ -9,7 +9,24 @@ import Placeholder from "./pages/Placeholder";
 import NotFound from "./pages/NotFound";
 import { Shield, Settings } from "lucide-react";
 
-const queryClient = new QueryClient();
+// Create QueryClient with better defaults for development
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: (failureCount, error) => {
+        // Don't retry on 4xx errors
+        if (error && typeof error === 'object' && 'status' in error) {
+          const status = (error as any).status;
+          if (status >= 400 && status < 500) {
+            return false;
+          }
+        }
+        return failureCount < 3;
+      },
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
