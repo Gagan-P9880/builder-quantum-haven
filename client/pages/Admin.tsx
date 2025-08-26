@@ -49,6 +49,8 @@ export default function Admin() {
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (error) setError(null);
   };
 
   return (
@@ -77,6 +79,12 @@ export default function Admin() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {error && (
+                <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center space-x-2">
+                  <AlertCircle className="h-4 w-4 text-destructive" />
+                  <p className="text-sm text-destructive">{error}</p>
+                </div>
+              )}
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="username">Username</Label>
