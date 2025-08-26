@@ -143,19 +143,27 @@ export default function DosProtection() {
   );
 
   const recentEvents = filteredEvents.slice(0, 10);
-  const blockedAttacks = dosEvents.filter((event) => event.status === "blocked").length;
-  const detectedAttacks = dosEvents.filter((event) => event.status === "detected").length;
-  const blockingRate = dosEvents.length > 0 
-    ? ((blockedAttacks / dosEvents.length) * 100).toFixed(1)
-    : "0";
+  const blockedAttacks = dosEvents.filter(
+    (event) => event.status === "blocked",
+  ).length;
+  const detectedAttacks = dosEvents.filter(
+    (event) => event.status === "detected",
+  ).length;
+  const blockingRate =
+    dosEvents.length > 0
+      ? ((blockedAttacks / dosEvents.length) * 100).toFixed(1)
+      : "0";
 
   // Group attacks by IP for analysis
-  const ipAttackCounts = dosEvents.reduce((acc, event) => {
-    if (event.ipAddress) {
-      acc[event.ipAddress] = (acc[event.ipAddress] || 0) + 1;
-    }
-    return acc;
-  }, {} as Record<string, number>);
+  const ipAttackCounts = dosEvents.reduce(
+    (acc, event) => {
+      if (event.ipAddress) {
+        acc[event.ipAddress] = (acc[event.ipAddress] || 0) + 1;
+      }
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   const topAttackers = Object.entries(ipAttackCounts)
     .sort(([, a], [, b]) => b - a)
@@ -470,8 +478,8 @@ export default function DosProtection() {
                               {count} attacks
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {((count / dosEvents.length) * 100).toFixed(1)}% of
-                              total
+                              {((count / dosEvents.length) * 100).toFixed(1)}%
+                              of total
                             </p>
                           </div>
                         </div>
@@ -575,8 +583,7 @@ export default function DosProtection() {
                         }`}
                       ></div>
                       <span className="text-sm font-medium">
-                        Protection:{" "}
-                        {protectionEnabled ? "Enabled" : "Disabled"}
+                        Protection: {protectionEnabled ? "Enabled" : "Disabled"}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">

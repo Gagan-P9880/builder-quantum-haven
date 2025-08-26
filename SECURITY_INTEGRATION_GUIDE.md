@@ -27,12 +27,12 @@ Your current SecureGuard application uses simulated data for demonstration purpo
 
 ### Current Architecture vs Production
 
-| Component | Current (Demo) | Production Target |
-|-----------|----------------|-------------------|
-| Data Storage | In-memory arrays | PostgreSQL/MySQL database |
-| RFID Data | Mock events every 5s | Real-time RFID reader APIs |
-| DoS Detection | Simulated attacks | Network IDS/IPS integration |
-| Event Persistence | Temporary (resets on restart) | Permanent database storage |
+| Component         | Current (Demo)                | Production Target           |
+| ----------------- | ----------------------------- | --------------------------- |
+| Data Storage      | In-memory arrays              | PostgreSQL/MySQL database   |
+| RFID Data         | Mock events every 5s          | Real-time RFID reader APIs  |
+| DoS Detection     | Simulated attacks             | Network IDS/IPS integration |
+| Event Persistence | Temporary (resets on restart) | Permanent database storage  |
 
 ---
 
@@ -41,6 +41,7 @@ Your current SecureGuard application uses simulated data for demonstration purpo
 ### Step 1: Choose Your Database
 
 #### Option A: PostgreSQL (Recommended)
+
 ```bash
 # Install PostgreSQL
 sudo apt-get install postgresql postgresql-contrib
@@ -53,6 +54,7 @@ GRANT ALL PRIVILEGES ON DATABASE secureGuard TO secureAdmin;
 ```
 
 #### Option B: MySQL
+
 ```bash
 # Install MySQL
 sudo apt-get install mysql-server
@@ -70,7 +72,7 @@ GRANT ALL PRIVILEGES ON secureGuard.* TO 'secureAdmin'@'localhost';
 # For PostgreSQL
 npm install pg @types/pg
 
-# For MySQL  
+# For MySQL
 npm install mysql2 @types/mysql2
 
 # For ORM (optional but recommended)
@@ -99,7 +101,7 @@ CREATE TABLE security_events (
     INDEX idx_severity (severity)
 );
 
--- Security Statistics Table  
+-- Security Statistics Table
 CREATE TABLE security_stats (
     id INT PRIMARY KEY AUTO_INCREMENT,
     total_scans INT DEFAULT 0,
@@ -151,32 +153,35 @@ CREATE TABLE access_zones (
 Create `server/services/database.ts`:
 
 ```typescript
-import mysql from 'mysql2/promise';
-import { SecurityEvent, SecurityStats, SystemHealth } from '@shared/api';
+import mysql from "mysql2/promise";
+import { SecurityEvent, SecurityStats, SystemHealth } from "@shared/api";
 
 class DatabaseService {
   private connection: mysql.Connection | null = null;
 
   async connect() {
     this.connection = await mysql.createConnection({
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'secureAdmin',
+      host: process.env.DB_HOST || "localhost",
+      user: process.env.DB_USER || "secureAdmin",
       password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME || 'secureGuard',
-      timezone: '+00:00'
+      database: process.env.DB_NAME || "secureGuard",
+      timezone: "+00:00",
     });
   }
 
-  async getSecurityEvents(page: number = 1, limit: number = 20): Promise<SecurityEvent[]> {
+  async getSecurityEvents(
+    page: number = 1,
+    limit: number = 20,
+  ): Promise<SecurityEvent[]> {
     if (!this.connection) await this.connect();
-    
+
     const offset = (page - 1) * limit;
     const [rows] = await this.connection.execute(
-      'SELECT * FROM security_events ORDER BY timestamp DESC LIMIT ? OFFSET ?',
-      [limit, offset]
+      "SELECT * FROM security_events ORDER BY timestamp DESC LIMIT ? OFFSET ?",
+      [limit, offset],
     );
-    
-    return (rows as any[]).map(row => ({
+
+    return (rows as any[]).map((row) => ({
       id: row.id,
       type: row.type,
       status: row.status,
@@ -185,29 +190,43 @@ class DatabaseService {
       cardId: row.card_id,
       ipAddress: row.ip_address,
       severity: row.severity,
-      description: row.description
+      description: row.description,
     }));
   }
 
-  async addSecurityEvent(event: Partial<SecurityEvent>): Promise<SecurityEvent> {
+  async addSecurityEvent(
+    event: Partial<SecurityEvent>,
+  ): Promise<SecurityEvent> {
     if (!this.connection) await this.connect();
-    
+
     const id = Math.random().toString(36).substr(2, 9);
     const timestamp = new Date().toISOString();
-    
+
     await this.connection.execute(
       `INSERT INTO security_events (id, type, status, timestamp, location, card_id, ip_address, severity, description) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [id, event.type, event.status, timestamp, event.location, event.cardId, event.ipAddress, event.severity, event.description]
+      [
+        id,
+        event.type,
+        event.status,
+        timestamp,
+        event.location,
+        event.cardId,
+        event.ipAddress,
+        event.severity,
+        event.description,
+      ],
     );
-    
+
     return { id, timestamp, ...event } as SecurityEvent;
   }
 
   async getSecurityStats(): Promise<SecurityStats> {
     if (!this.connection) await this.connect();
-    
-    const [rows] = await this.connection.execute('SELECT * FROM security_stats LIMIT 1');
+
+    const [rows] = await this.connection.execute(
+      "SELECT * FROM security_stats LIMIT 1",
+    );
     if ((rows as any[]).length === 0) {
       // Initialize default stats
       return {
@@ -216,10 +235,10 @@ class DatabaseService {
         unauthorizedScans: 0,
         dosAttacks: 0,
         activeThreats: 0,
-        systemStatus: 'operational'
+        systemStatus: "operational",
       };
     }
-    
+
     const row = (rows as any[])[0];
     return {
       totalScans: row.total_scans,
@@ -227,13 +246,13 @@ class DatabaseService {
       unauthorizedScans: row.unauthorized_scans,
       dosAttacks: row.dos_attacks,
       activeThreats: row.active_threats,
-      systemStatus: row.system_status
+      systemStatus: row.system_status,
     };
   }
 
   async updateSecurityStats(stats: Partial<SecurityStats>): Promise<void> {
     if (!this.connection) await this.connect();
-    
+
     await this.connection.execute(
       `INSERT INTO security_stats (total_scans, authorized_scans, unauthorized_scans, dos_attacks, active_threats, system_status) 
        VALUES (?, ?, ?, ?, ?, ?) 
@@ -244,7 +263,14 @@ class DatabaseService {
        dos_attacks = VALUES(dos_attacks),
        active_threats = VALUES(active_threats),
        system_status = VALUES(system_status)`,
-      [stats.totalScans, stats.authorizedScans, stats.unauthorizedScans, stats.dosAttacks, stats.activeThreats, stats.systemStatus]
+      [
+        stats.totalScans,
+        stats.authorizedScans,
+        stats.unauthorizedScans,
+        stats.dosAttacks,
+        stats.activeThreats,
+        stats.systemStatus,
+      ],
     );
   }
 }
@@ -277,22 +303,23 @@ IDS_API_KEY=your_ids_api_key
 ### Step 1: Common RFID Reader APIs
 
 #### HID Global Readers
+
 ```typescript
 // server/services/rfidService.ts
-import axios from 'axios';
+import axios from "axios";
 
 class HIDRFIDService {
   private baseURL: string;
   private apiKey: string;
 
   constructor() {
-    this.baseURL = process.env.HID_RFID_API_URL || 'http://192.168.1.100:8080';
-    this.apiKey = process.env.HID_RFID_API_KEY || '';
+    this.baseURL = process.env.HID_RFID_API_URL || "http://192.168.1.100:8080";
+    this.apiKey = process.env.HID_RFID_API_KEY || "";
   }
 
   async getReaderStatus(): Promise<any> {
     const response = await axios.get(`${this.baseURL}/api/readers/status`, {
-      headers: { 'Authorization': `Bearer ${this.apiKey}` }
+      headers: { Authorization: `Bearer ${this.apiKey}` },
     });
     return response.data;
   }
@@ -300,16 +327,17 @@ class HIDRFIDService {
   async getAccessEvents(since?: Date): Promise<any[]> {
     const params = since ? { since: since.toISOString() } : {};
     const response = await axios.get(`${this.baseURL}/api/events/access`, {
-      headers: { 'Authorization': `Bearer ${this.apiKey}` },
-      params
+      headers: { Authorization: `Bearer ${this.apiKey}` },
+      params,
     });
     return response.data;
   }
 
   async validateCard(cardId: string): Promise<boolean> {
-    const response = await axios.post(`${this.baseURL}/api/cards/validate`, 
+    const response = await axios.post(
+      `${this.baseURL}/api/cards/validate`,
       { cardId },
-      { headers: { 'Authorization': `Bearer ${this.apiKey}` } }
+      { headers: { Authorization: `Bearer ${this.apiKey}` } },
     );
     return response.data.isValid;
   }
@@ -317,12 +345,13 @@ class HIDRFIDService {
 ```
 
 #### Mifare/NFC Readers
+
 ```typescript
 class MifareRFIDService {
   private serialPort: string;
-  
+
   constructor() {
-    this.serialPort = process.env.RFID_SERIAL_PORT || '/dev/ttyUSB0';
+    this.serialPort = process.env.RFID_SERIAL_PORT || "/dev/ttyUSB0";
   }
 
   async initializeReader(): Promise<void> {
@@ -342,22 +371,22 @@ class MifareRFIDService {
 Create `server/services/rfidIntegration.ts`:
 
 ```typescript
-import { SecurityEvent } from '@shared/api';
-import { dbService } from './database';
+import { SecurityEvent } from "@shared/api";
+import { dbService } from "./database";
 
 class RFIDIntegration {
   private pollingInterval: NodeJS.Timeout | null = null;
   private lastEventTime: Date = new Date();
 
   async startMonitoring(): Promise<void> {
-    console.log('Starting RFID monitoring...');
-    
+    console.log("Starting RFID monitoring...");
+
     // Poll for new events every 2 seconds
     this.pollingInterval = setInterval(async () => {
       try {
         await this.checkForNewEvents();
       } catch (error) {
-        console.error('RFID monitoring error:', error);
+        console.error("RFID monitoring error:", error);
       }
     }, 2000);
   }
@@ -365,7 +394,7 @@ class RFIDIntegration {
   private async checkForNewEvents(): Promise<void> {
     // Replace with your RFID reader API call
     const events = await this.fetchRFIDEvents();
-    
+
     for (const event of events) {
       await this.processRFIDEvent(event);
     }
@@ -374,14 +403,17 @@ class RFIDIntegration {
   private async fetchRFIDEvents(): Promise<any[]> {
     // Example for HTTP-based RFID reader
     try {
-      const response = await fetch(`${process.env.RFID_READER_API_URL}/events`, {
-        headers: {
-          'Authorization': `Bearer ${process.env.RFID_READER_API_KEY}`
-        }
-      });
+      const response = await fetch(
+        `${process.env.RFID_READER_API_URL}/events`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.RFID_READER_API_KEY}`,
+          },
+        },
+      );
       return await response.json();
     } catch (error) {
-      console.error('Failed to fetch RFID events:', error);
+      console.error("Failed to fetch RFID events:", error);
       return [];
     }
   }
@@ -389,19 +421,19 @@ class RFIDIntegration {
   private async processRFIDEvent(rfidEvent: any): Promise<void> {
     // Convert RFID reader event to SecurityEvent
     const securityEvent: Partial<SecurityEvent> = {
-      type: 'rfid',
-      status: rfidEvent.accessGranted ? 'authorized' : 'unauthorized',
+      type: "rfid",
+      status: rfidEvent.accessGranted ? "authorized" : "unauthorized",
       cardId: rfidEvent.cardId,
       location: rfidEvent.readerLocation,
-      severity: rfidEvent.accessGranted ? 'low' : 'high',
-      description: rfidEvent.accessGranted 
-        ? 'Valid access card detected' 
-        : 'Unauthorized access attempt'
+      severity: rfidEvent.accessGranted ? "low" : "high",
+      description: rfidEvent.accessGranted
+        ? "Valid access card detected"
+        : "Unauthorized access attempt",
     };
 
     // Store in database
     await dbService.addSecurityEvent(securityEvent);
-    
+
     // Update statistics
     await this.updateRFIDStats(rfidEvent.accessGranted);
   }
@@ -409,13 +441,13 @@ class RFIDIntegration {
   private async updateRFIDStats(wasAuthorized: boolean): Promise<void> {
     const stats = await dbService.getSecurityStats();
     stats.totalScans++;
-    
+
     if (wasAuthorized) {
       stats.authorizedScans++;
     } else {
       stats.unauthorizedScans++;
     }
-    
+
     await dbService.updateSecurityStats(stats);
   }
 
@@ -433,24 +465,26 @@ export const rfidIntegration = new RFIDIntegration();
 ### Step 3: Popular RFID Reader Configurations
 
 #### Impinj RAIN RFID Readers
+
 ```typescript
 // Configuration for Impinj readers
 const impinjConfig = {
-  readerIP: '192.168.1.100',
+  readerIP: "192.168.1.100",
   port: 5084,
   antennas: [1, 2, 3, 4], // Active antenna ports
-  protocol: 'LLRP' // Low Level Reader Protocol
+  protocol: "LLRP", // Low Level Reader Protocol
 };
 ```
 
 #### HID Proximity Readers
+
 ```typescript
 // Configuration for HID proximity card readers
 const hidConfig = {
-  readerType: 'HID_Proximity',
-  serialPort: '/dev/ttyUSB0',
+  readerType: "HID_Proximity",
+  serialPort: "/dev/ttyUSB0",
   baudRate: 9600,
-  dataFormat: 'Wiegand26'
+  dataFormat: "Wiegand26",
 };
 ```
 
@@ -461,6 +495,7 @@ const hidConfig = {
 ### Step 1: Snort Integration
 
 #### Installing Snort
+
 ```bash
 # Ubuntu/Debian
 sudo apt-get install snort
@@ -470,6 +505,7 @@ sudo nano /etc/snort/rules/local.rules
 ```
 
 #### Snort Rules for DoS Detection
+
 ```bash
 # Add to /etc/snort/rules/local.rules
 alert tcp any any -> $HOME_NET any (msg:"Possible TCP DoS Attack"; flow:stateless; flags:S; threshold:type limit, track by_src, count 100, seconds 10; sid:1000001; rev:1;)
@@ -482,24 +518,24 @@ alert tcp any any -> $HOME_NET 80 (msg:"HTTP DoS Attack"; flow:to_server,establi
 Create `server/services/snortIntegration.ts`:
 
 ```typescript
-import { watch } from 'fs';
-import { readFileSync } from 'fs';
-import { SecurityEvent } from '@shared/api';
-import { dbService } from './database';
+import { watch } from "fs";
+import { readFileSync } from "fs";
+import { SecurityEvent } from "@shared/api";
+import { dbService } from "./database";
 
 class SnortIntegration {
   private logFile: string;
   private watcher: any;
 
   constructor() {
-    this.logFile = process.env.SNORT_LOG_FILE || '/var/log/snort/alert.csv';
+    this.logFile = process.env.SNORT_LOG_FILE || "/var/log/snort/alert.csv";
   }
 
   startMonitoring(): void {
-    console.log('Starting Snort log monitoring...');
-    
+    console.log("Starting Snort log monitoring...");
+
     this.watcher = watch(this.logFile, (eventType) => {
-      if (eventType === 'change') {
+      if (eventType === "change") {
         this.processNewAlerts();
       }
     });
@@ -507,45 +543,49 @@ class SnortIntegration {
 
   private async processNewAlerts(): Promise<void> {
     try {
-      const logContent = readFileSync(this.logFile, 'utf8');
-      const lines = logContent.split('\n');
+      const logContent = readFileSync(this.logFile, "utf8");
+      const lines = logContent.split("\n");
       const lastLine = lines[lines.length - 2]; // Last complete line
-      
+
       if (lastLine && this.isDoSAlert(lastLine)) {
         await this.createDoSEvent(lastLine);
       }
     } catch (error) {
-      console.error('Error processing Snort alerts:', error);
+      console.error("Error processing Snort alerts:", error);
     }
   }
 
   private isDoSAlert(logLine: string): boolean {
-    const dosKeywords = ['DoS', 'Flood', 'DDoS', 'TCP DoS', 'ICMP Flood'];
-    return dosKeywords.some(keyword => logLine.includes(keyword));
+    const dosKeywords = ["DoS", "Flood", "DDoS", "TCP DoS", "ICMP Flood"];
+    return dosKeywords.some((keyword) => logLine.includes(keyword));
   }
 
   private async createDoSEvent(logLine: string): Promise<void> {
-    const parts = logLine.split(',');
+    const parts = logLine.split(",");
     const sourceIP = parts[6]; // Snort CSV format
     const message = parts[1];
-    
+
     const securityEvent: Partial<SecurityEvent> = {
-      type: 'dos',
-      status: 'detected', // Default to detected, update based on firewall response
+      type: "dos",
+      status: "detected", // Default to detected, update based on firewall response
       ipAddress: sourceIP,
       severity: this.determineSeverity(message),
-      description: `DoS attack detected: ${message}`
+      description: `DoS attack detected: ${message}`,
     };
 
     await dbService.addSecurityEvent(securityEvent);
     await this.updateDoSStats();
   }
 
-  private determineSeverity(message: string): 'low' | 'medium' | 'high' | 'critical' {
-    if (message.includes('DDoS') || message.includes('critical')) return 'critical';
-    if (message.includes('high') || message.includes('severe')) return 'high';
-    if (message.includes('medium') || message.includes('moderate')) return 'medium';
-    return 'low';
+  private determineSeverity(
+    message: string,
+  ): "low" | "medium" | "high" | "critical" {
+    if (message.includes("DDoS") || message.includes("critical"))
+      return "critical";
+    if (message.includes("high") || message.includes("severe")) return "high";
+    if (message.includes("medium") || message.includes("moderate"))
+      return "medium";
+    return "low";
   }
 
   private async updateDoSStats(): Promise<void> {
@@ -568,6 +608,7 @@ export const snortIntegration = new SnortIntegration();
 ### Step 3: Suricata Integration
 
 #### Suricata Configuration
+
 ```bash
 # Install Suricata
 sudo apt-get install suricata
@@ -577,61 +618,67 @@ sudo nano /etc/suricata/suricata.yaml
 ```
 
 #### Suricata Eve JSON Integration
+
 ```typescript
 // server/services/suricataIntegration.ts
-import { createReadStream } from 'fs';
-import { createInterface } from 'readline';
+import { createReadStream } from "fs";
+import { createInterface } from "readline";
 
 class SuricataIntegration {
   private eveLogFile: string;
 
   constructor() {
-    this.eveLogFile = process.env.SURICATA_EVE_LOG || '/var/log/suricata/eve.json';
+    this.eveLogFile =
+      process.env.SURICATA_EVE_LOG || "/var/log/suricata/eve.json";
   }
 
   async startMonitoring(): Promise<void> {
     const fileStream = createReadStream(this.eveLogFile);
     const rl = createInterface({
       input: fileStream,
-      crlfDelay: Infinity
+      crlfDelay: Infinity,
     });
 
-    rl.on('line', async (line) => {
+    rl.on("line", async (line) => {
       try {
         const event = JSON.parse(line);
-        if (event.event_type === 'alert' && this.isDoSAlert(event)) {
+        if (event.event_type === "alert" && this.isDoSAlert(event)) {
           await this.processDoSAlert(event);
         }
       } catch (error) {
-        console.error('Error parsing Suricata event:', error);
+        console.error("Error parsing Suricata event:", error);
       }
     });
   }
 
   private isDoSAlert(event: any): boolean {
-    const signature = event.alert?.signature?.toLowerCase() || '';
-    return signature.includes('dos') || 
-           signature.includes('flood') || 
-           signature.includes('ddos');
+    const signature = event.alert?.signature?.toLowerCase() || "";
+    return (
+      signature.includes("dos") ||
+      signature.includes("flood") ||
+      signature.includes("ddos")
+    );
   }
 
   private async processDoSAlert(event: any): Promise<void> {
     const securityEvent: Partial<SecurityEvent> = {
-      type: 'dos',
-      status: 'detected',
+      type: "dos",
+      status: "detected",
       ipAddress: event.src_ip,
       severity: this.mapSeverity(event.alert?.severity),
-      description: `${event.alert?.signature} - ${event.alert?.category}`
+      description: `${event.alert?.signature} - ${event.alert?.category}`,
     };
 
     await dbService.addSecurityEvent(securityEvent);
   }
 
-  private mapSeverity(suricataSeverity: number): 'low' | 'medium' | 'high' | 'critical' {
-    if (suricataSeverity === 1) return 'critical';
-    if (suricataSeverity === 2) return 'high';
-    if (suricataSeverity === 3) return 'medium';
-    return 'low';
+  private mapSeverity(
+    suricataSeverity: number,
+  ): "low" | "medium" | "high" | "critical" {
+    if (suricataSeverity === 1) return "critical";
+    if (suricataSeverity === 2) return "high";
+    if (suricataSeverity === 3) return "medium";
+    return "low";
   }
 }
 ```
@@ -644,45 +691,52 @@ class SuricataIntegration {
 
 ```typescript
 // server/services/pfSenseIntegration.ts
-import axios from 'axios';
+import axios from "axios";
 
 class PfSenseIntegration {
   private baseURL: string;
   private apiKey: string;
 
   constructor() {
-    this.baseURL = process.env.PFSENSE_API_URL || 'https://192.168.1.1';
-    this.apiKey = process.env.PFSENSE_API_KEY || '';
+    this.baseURL = process.env.PFSENSE_API_URL || "https://192.168.1.1";
+    this.apiKey = process.env.PFSENSE_API_KEY || "";
   }
 
   async getFirewallLogs(): Promise<any[]> {
-    const response = await axios.get(`${this.baseURL}/api/v1/diagnostics/logs/firewall`, {
-      headers: { 'Authorization': `Bearer ${this.apiKey}` },
-      params: { limit: 100 }
-    });
+    const response = await axios.get(
+      `${this.baseURL}/api/v1/diagnostics/logs/firewall`,
+      {
+        headers: { Authorization: `Bearer ${this.apiKey}` },
+        params: { limit: 100 },
+      },
+    );
     return response.data.data;
   }
 
   async blockIP(ipAddress: string): Promise<boolean> {
     try {
-      await axios.post(`${this.baseURL}/api/v1/firewall/alias/entry`, {
-        alias: 'blocked_ips',
-        address: ipAddress,
-        description: `Auto-blocked by SecureGuard - ${new Date().toISOString()}`
-      }, {
-        headers: { 'Authorization': `Bearer ${this.apiKey}` }
-      });
+      await axios.post(
+        `${this.baseURL}/api/v1/firewall/alias/entry`,
+        {
+          alias: "blocked_ips",
+          address: ipAddress,
+          description: `Auto-blocked by SecureGuard - ${new Date().toISOString()}`,
+        },
+        {
+          headers: { Authorization: `Bearer ${this.apiKey}` },
+        },
+      );
       return true;
     } catch (error) {
-      console.error('Failed to block IP:', error);
+      console.error("Failed to block IP:", error);
       return false;
     }
   }
 
   async getBlockedIPs(): Promise<string[]> {
     const response = await axios.get(`${this.baseURL}/api/v1/firewall/alias`, {
-      headers: { 'Authorization': `Bearer ${this.apiKey}` },
-      params: { name: 'blocked_ips' }
+      headers: { Authorization: `Bearer ${this.apiKey}` },
+      params: { name: "blocked_ips" },
     });
     return response.data.data?.address || [];
   }
@@ -695,22 +749,23 @@ export const pfSenseIntegration = new PfSenseIntegration();
 
 ```typescript
 // server/services/splunkIntegration.ts
-import axios from 'axios';
+import axios from "axios";
 
 class SplunkIntegration {
   private baseURL: string;
   private token: string;
 
   constructor() {
-    this.baseURL = process.env.SPLUNK_API_URL || 'https://splunk.company.com:8089';
-    this.token = process.env.SPLUNK_API_TOKEN || '';
+    this.baseURL =
+      process.env.SPLUNK_API_URL || "https://splunk.company.com:8089";
+    this.token = process.env.SPLUNK_API_TOKEN || "";
   }
 
   async sendEvent(event: SecurityEvent): Promise<void> {
     const splunkEvent = {
       time: new Date(event.timestamp).getTime() / 1000,
-      source: 'secureGuard',
-      sourcetype: 'security_event',
+      source: "secureGuard",
+      sourcetype: "security_event",
       event: {
         type: event.type,
         status: event.status,
@@ -718,29 +773,30 @@ class SplunkIntegration {
         location: event.location,
         cardId: event.cardId,
         ipAddress: event.ipAddress,
-        description: event.description
-      }
+        description: event.description,
+      },
     };
 
     await axios.post(`${this.baseURL}/services/collector/event`, splunkEvent, {
       headers: {
-        'Authorization': `Splunk ${this.token}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Splunk ${this.token}`,
+        "Content-Type": "application/json",
+      },
     });
   }
 
   async querySecurityEvents(query: string): Promise<any[]> {
-    const response = await axios.post(`${this.baseURL}/services/search/jobs`, 
+    const response = await axios.post(
+      `${this.baseURL}/services/search/jobs`,
       `search=${encodeURIComponent(query)}`,
       {
         headers: {
-          'Authorization': `Splunk ${this.token}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }
+          Authorization: `Splunk ${this.token}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      },
     );
-    
+
     // Process Splunk search results
     return response.data;
   }
@@ -756,35 +812,44 @@ class MilestoneIntegration {
   private token: string;
 
   constructor() {
-    this.baseURL = process.env.MILESTONE_API_URL || 'http://192.168.1.50:80';
-    this.token = process.env.MILESTONE_TOKEN || '';
+    this.baseURL = process.env.MILESTONE_API_URL || "http://192.168.1.50:80";
+    this.token = process.env.MILESTONE_TOKEN || "";
   }
 
   async getCameraList(): Promise<any[]> {
     const response = await fetch(`${this.baseURL}/api/rest/v1/cameras`, {
-      headers: { 'Authorization': `Bearer ${this.token}` }
+      headers: { Authorization: `Bearer ${this.token}` },
     });
     return await response.json();
   }
 
-  async triggerRecording(cameraId: string, duration: number = 30): Promise<boolean> {
+  async triggerRecording(
+    cameraId: string,
+    duration: number = 30,
+  ): Promise<boolean> {
     try {
-      await fetch(`${this.baseURL}/api/rest/v1/cameras/${cameraId}/recording/start`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${this.token}` },
-        body: JSON.stringify({ duration })
-      });
+      await fetch(
+        `${this.baseURL}/api/rest/v1/cameras/${cameraId}/recording/start`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${this.token}` },
+          body: JSON.stringify({ duration }),
+        },
+      );
       return true;
     } catch (error) {
-      console.error('Failed to trigger recording:', error);
+      console.error("Failed to trigger recording:", error);
       return false;
     }
   }
 
   async getSnapshot(cameraId: string): Promise<Buffer> {
-    const response = await fetch(`${this.baseURL}/api/rest/v1/cameras/${cameraId}/snapshot`, {
-      headers: { 'Authorization': `Bearer ${this.token}` }
-    });
+    const response = await fetch(
+      `${this.baseURL}/api/rest/v1/cameras/${cameraId}/snapshot`,
+      {
+        headers: { Authorization: `Bearer ${this.token}` },
+      },
+    );
     return Buffer.from(await response.arrayBuffer());
   }
 }
@@ -799,27 +864,27 @@ class MilestoneIntegration {
 Modify `server/index.ts` to start all integrations:
 
 ```typescript
-import { rfidIntegration } from './services/rfidIntegration';
-import { snortIntegration } from './services/snortIntegration';
-import { dbService } from './services/database';
+import { rfidIntegration } from "./services/rfidIntegration";
+import { snortIntegration } from "./services/snortIntegration";
+import { dbService } from "./services/database";
 
 export function createServer() {
   const app = express();
-  
+
   // ... existing middleware and routes ...
 
   // Start security integrations in production
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     // Initialize database
     dbService.connect();
-    
+
     // Start RFID monitoring
     rfidIntegration.startMonitoring();
-    
+
     // Start IDS monitoring
     snortIntegration.startMonitoring();
-    
-    console.log('🔒 Security integrations started');
+
+    console.log("🔒 Security integrations started");
   }
 
   return app;
@@ -865,7 +930,7 @@ MILESTONE_TOKEN=your-milestone-token
 Create `docker-compose.production.yml`:
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   secureguard-app:
@@ -906,6 +971,7 @@ volumes:
 ### Common Issues
 
 #### RFID Reader Connection
+
 ```bash
 # Test RFID reader connectivity
 curl -H "Authorization: Bearer YOUR_API_KEY" http://192.168.1.100:8080/api/status
@@ -916,6 +982,7 @@ sudo chmod 666 /dev/ttyUSB0
 ```
 
 #### Database Connection
+
 ```bash
 # Test database connection
 mysql -h localhost -u secureAdmin -p secureGuard
@@ -925,6 +992,7 @@ sudo tail -f /var/log/mysql/error.log
 ```
 
 #### Network Monitoring
+
 ```bash
 # Check Snort status
 sudo systemctl status snort
@@ -939,6 +1007,7 @@ sudo tail -f /var/log/suricata/eve.json
 ### Performance Optimization
 
 #### Database Indexing
+
 ```sql
 -- Add indexes for better query performance
 CREATE INDEX idx_events_timestamp ON security_events(timestamp);
@@ -947,6 +1016,7 @@ CREATE INDEX idx_events_severity ON security_events(severity);
 ```
 
 #### Connection Pooling
+
 ```typescript
 // Use connection pooling for better performance
 const pool = mysql.createPool({
@@ -956,7 +1026,7 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 ```
 
@@ -971,32 +1041,34 @@ const pool = mysql.createPool({
 ### Monitoring and Alerting
 
 #### Health Checks
+
 ```typescript
 // Add health check endpoints
-app.get('/api/health/rfid', async (req, res) => {
+app.get("/api/health/rfid", async (req, res) => {
   const status = await rfidIntegration.getHealthStatus();
   res.json({ status, timestamp: new Date().toISOString() });
 });
 
-app.get('/api/health/database', async (req, res) => {
+app.get("/api/health/database", async (req, res) => {
   const status = await dbService.healthCheck();
   res.json({ status, timestamp: new Date().toISOString() });
 });
 ```
 
 #### Alerting Integration
+
 ```typescript
 // Email/SMS alerts for critical events
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 class AlertService {
   async sendCriticalAlert(event: SecurityEvent): Promise<void> {
-    if (event.severity === 'critical') {
+    if (event.severity === "critical") {
       // Send immediate notification
       await this.sendEmail({
         to: process.env.SECURITY_ADMIN_EMAIL,
-        subject: 'CRITICAL: Security Event Detected',
-        body: `Critical security event: ${event.description}`
+        subject: "CRITICAL: Security Event Detected",
+        body: `Critical security event: ${event.description}`,
       });
     }
   }
@@ -1019,7 +1091,8 @@ For specific vendor integrations not covered here, consult the manufacturer's AP
 
 ---
 
-**Need Help?** 
+**Need Help?**
+
 - Check the [Troubleshooting](#troubleshooting) section
 - Review vendor API documentation
 - Test each integration individually before combining

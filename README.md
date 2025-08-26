@@ -274,6 +274,7 @@ const events = await db.securityEvents.findMany({
 For detailed production integration steps, see: **[SECURITY_INTEGRATION_GUIDE.md](SECURITY_INTEGRATION_GUIDE.md)**
 
 This comprehensive guide covers:
+
 - **Database persistence** setup (PostgreSQL/MySQL)
 - **Real RFID reader APIs** integration
 - **Network intrusion detection** systems (Snort/Suricata)

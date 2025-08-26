@@ -123,9 +123,10 @@ export default function RfidMonitor() {
   );
 
   const recentEvents = filteredEvents.slice(0, 10);
-  const authorizationRate = stats.totalScans > 0 
-    ? ((stats.authorizedScans / stats.totalScans) * 100).toFixed(1)
-    : "0";
+  const authorizationRate =
+    stats.totalScans > 0
+      ? ((stats.authorizedScans / stats.totalScans) * 100).toFixed(1)
+      : "0";
 
   if (isLoading) {
     return (
@@ -237,7 +238,9 @@ export default function RfidMonitor() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Readers Online</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Readers Online
+              </CardTitle>
               <Wifi className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
@@ -364,7 +367,9 @@ export default function RfidMonitor() {
                               {event.cardId}
                             </TableCell>
                             <TableCell>{event.location}</TableCell>
-                            <TableCell>{getStatusBadge(event.status)}</TableCell>
+                            <TableCell>
+                              {getStatusBadge(event.status)}
+                            </TableCell>
                             <TableCell>
                               <span
                                 className={`text-xs font-medium ${
@@ -394,7 +399,9 @@ export default function RfidMonitor() {
           <Card>
             <CardHeader>
               <CardTitle>RFID System Status</CardTitle>
-              <CardDescription>Current reader status and health</CardDescription>
+              <CardDescription>
+                Current reader status and health
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {systemHealth ? (
@@ -426,7 +433,9 @@ export default function RfidMonitor() {
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">Network Status</span>
+                      <span className="text-sm font-medium">
+                        Network Status
+                      </span>
                       <span
                         className={`text-sm ${
                           systemHealth.network.percentage >= 90
